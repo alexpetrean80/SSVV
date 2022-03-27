@@ -2,41 +2,54 @@ package service;
 
 import domain.*;
 import repository.*;
+import validation.ValidationException;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
 
 public class Service {
-    private StudentXMLRepository studentXmlRepo;
-    private TemaXMLRepository temaXmlRepo;
-    private NotaXMLRepository notaXmlRepo;
+    private CRUDRepository<String, Student> studentRepo;
+    private CRUDRepository<String, Tema> temaRepo;
+    private CRUDRepository<Pair<String, String>, Nota> notaRepo;
 
-    public Service(StudentXMLRepository studentXmlRepo, TemaXMLRepository temaXmlRepo, NotaXMLRepository notaXmlRepo) {
-        this.studentXmlRepo = studentXmlRepo;
-        this.temaXmlRepo = temaXmlRepo;
-        this.notaXmlRepo = notaXmlRepo;
+    public Service(CRUDRepository<String, Student> studentRepo,
+                   CRUDRepository<String, Tema> temaRepo,
+                   CRUDRepository<Pair<String, String>, Nota> notaRepo) {
+        this.studentRepo = studentRepo;
+        this.temaRepo = temaRepo;
+        this.notaRepo = notaRepo;
     }
 
-    public Iterable<Student> findAllStudents() { return studentXmlRepo.findAll(); }
+    public Iterable<Student> findAllStudents() {
+        return studentRepo.findAll();
+    }
 
-    public Iterable<Tema> findAllTeme() { return temaXmlRepo.findAll(); }
+    public Iterable<Tema> findAllTeme() {
+        return temaRepo.findAll();
+    }
 
-    public Iterable<Nota> findAllNote() { return notaXmlRepo.findAll(); }
+    public Iterable<Nota> findAllNote() {
+        return notaRepo.findAll();
+    }
 
-    public int saveStudent(String id, String nume, int grupa) {
+    public int saveStudent(String id, String nume, Integer grupa) {
         Student student = new Student(id, nume, grupa);
-        Student result = studentXmlRepo.save(student);
+        try {
+            Student result = studentRepo.save(student);
 
-        if (result == null) {
+            if (result == null) {
+                return 0;
+            }
+            return 1;
+        } catch (ValidationException ex) {
             return 1;
         }
-        return 0;
     }
 
     public int saveTema(String id, String descriere, int deadline, int startline) {
         Tema tema = new Tema(id, descriere, deadline, startline);
-        Tema result = temaXmlRepo.save(tema);
+        Tema result = temaRepo.save(tema);
 
         if (result == null) {
             return 1;
@@ -45,19 +58,18 @@ public class Service {
     }
 
     public int saveNota(String idStudent, String idTema, double valNota, int predata, String feedback) {
-        if (studentXmlRepo.findOne(idStudent) == null || temaXmlRepo.findOne(idTema) == null) {
+        if (studentRepo.findOne(idStudent) == null || temaRepo.findOne(idTema) == null) {
             return -1;
-        }
-        else {
-            int deadline = temaXmlRepo.findOne(idTema).getDeadline();
+        } else {
+            int deadline = temaRepo.findOne(idTema).getDeadline();
 
             if (predata - deadline > 2) {
-                valNota =  1;
+                valNota = 1;
             } else {
-                valNota =  valNota - 2.5 * (predata - deadline);
+                valNota = valNota - 2.5 * (predata - deadline);
             }
-            Nota nota = new Nota(new Pair(idStudent, idTema), valNota, predata, feedback);
-            Nota result = notaXmlRepo.save(nota);
+            Nota nota = new Nota(new Pair<>(idStudent, idTema), valNota, predata, feedback);
+            Nota result = notaRepo.save(nota);
 
             if (result == null) {
                 return 1;
@@ -67,7 +79,7 @@ public class Service {
     }
 
     public int deleteStudent(String id) {
-        Student result = studentXmlRepo.delete(id);
+        Student result = studentRepo.delete(id);
 
         if (result == null) {
             return 0;
@@ -76,7 +88,7 @@ public class Service {
     }
 
     public int deleteTema(String id) {
-        Tema result = temaXmlRepo.delete(id);
+        Tema result = temaRepo.delete(id);
 
         if (result == null) {
             return 0;
@@ -86,7 +98,7 @@ public class Service {
 
     public int updateStudent(String id, String numeNou, int grupaNoua) {
         Student studentNou = new Student(id, numeNou, grupaNoua);
-        Student result = studentXmlRepo.update(studentNou);
+        Student result = studentRepo.update(studentNou);
 
         if (result == null) {
             return 0;
@@ -96,7 +108,7 @@ public class Service {
 
     public int updateTema(String id, String descriereNoua, int deadlineNou, int startlineNou) {
         Tema temaNoua = new Tema(id, descriereNoua, deadlineNou, startlineNou);
-        Tema result = temaXmlRepo.update(temaNoua);
+        Tema result = temaRepo.update(temaNoua);
 
         if (result == null) {
             return 0;
@@ -105,7 +117,7 @@ public class Service {
     }
 
     public int extendDeadline(String id, int noWeeks) {
-        Tema tema = temaXmlRepo.findOne(id);
+        Tema tema = temaRepo.findOne(id);
 
         if (tema != null) {
             LocalDate date = LocalDate.now();
@@ -126,9 +138,5 @@ public class Service {
         return 0;
     }
 
-    public void createStudentFile(String idStudent, String idTema) {
-        Nota nota = notaXmlRepo.findOne(new Pair(idStudent, idTema));
 
-        notaXmlRepo.createFile(nota);
-    }
 }

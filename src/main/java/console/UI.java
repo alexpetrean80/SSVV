@@ -114,7 +114,6 @@ public class UI {
 
         int result = service.saveNota(idStudent, idTema, valNota, predata, feedback);
         if (result == 1) {
-            service.createStudentFile(idStudent, idTema);
             System.out.println("Nota adaugata cu succes! \n");
         }
         else if (result == 0) {

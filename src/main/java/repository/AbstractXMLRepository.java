@@ -45,14 +45,8 @@ public abstract class AbstractXMLRepository<ID, E extends HasID<ID>> extends Abs
                 }
             }
         }
-        catch(ParserConfigurationException pce) {
+        catch(ParserConfigurationException | SAXException | IOException pce) {
             pce.printStackTrace();
-        }
-        catch(SAXException s) {
-            s.printStackTrace();
-        }
-        catch(IOException i) {
-            i.printStackTrace();
         }
     }
 
@@ -66,15 +60,8 @@ public abstract class AbstractXMLRepository<ID, E extends HasID<ID>> extends Abs
             Transformer XMLtransformer = TransformerFactory.newInstance().newTransformer();
             XMLtransformer.setOutputProperty(OutputKeys.INDENT, "yes");
             XMLtransformer.transform(new DOMSource(XMLdocument), new StreamResult(XMLfilename));
-        }
-        catch(ParserConfigurationException pce) {
+        } catch(ParserConfigurationException | TransformerException pce) {
             pce.printStackTrace();
-        }
-        catch(TransformerConfigurationException tce) {
-            tce.printStackTrace();
-        }
-        catch(TransformerException te) {
-            te.printStackTrace();
         }
     }
 
