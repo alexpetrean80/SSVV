@@ -46,42 +46,42 @@ public class SaveTemaTest {
     }
 
     @Test
-    public void testSaveTema_ValidInputAndUniqueId(){
+    public void testSaveTema_validInputAndUniqueId(){
 
         var result = service.saveTema("id", "desc", 6, 4);
         assertEquals(0, result);
     }
 
     @Test
-    public void testSaveTema_InvalidId(){
+    public void testSaveTema_invalidId(){
         assertThrows(ValidationException.class, () -> {
             service.saveTema("", "desc", 6, 4);
         });
     }
 
     @Test
-    public void testSaveTema_InvalidDesc(){
+    public void testSaveTema_invalidDesc(){
        assertThrows(ValidationException.class, () -> {
            service.saveTema("id", "", 6, 4);
        });
     }
 
     @Test
-    public void testSaveTema_InvalidDeadline(){
+    public void testSaveTema_invalidDeadline(){
         assertThrows(ValidationException.class, () -> {
             service.saveTema("id", "test", 3, 4);
         });
     }
 
     @Test
-    public void testSaveTema_InvalidStartline(){
+    public void testSaveTema_invalidStartline(){
         assertThrows(ValidationException.class, () -> {
             service.saveTema("id", "test", 6, 8);
         });
     }
 
     @Test
-    public void testSaveTema_ValidInputDuplicateId(){
+    public void testSaveTema_validInputDuplicateId(){
         var result = service.saveTema("id", "desc", 6, 4);
         assertEquals(0, result);
 
