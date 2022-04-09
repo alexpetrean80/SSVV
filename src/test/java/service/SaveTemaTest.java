@@ -11,12 +11,10 @@ import repository.CRUDRepository;
 import repository.NotaRepository;
 import repository.StudentRepository;
 import repository.TemaRepository;
-import validation.NotaValidator;
-import validation.StudentValidator;
-import validation.TemaValidator;
-import validation.Validator;
+import validation.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class SaveTemaTest {
 
@@ -48,16 +46,48 @@ public class SaveTemaTest {
     }
 
     @Test
-    public void testSaveTema_ValidInput(){
+    public void testSaveTema_ValidInputAndUniqueId(){
 
-        var result = service.saveTema("id", "desc", 10, 8);
+        var result = service.saveTema("id", "desc", 6, 4);
         assertEquals(0, result);
     }
 
     @Test
-    public void testSaveTema_InvalidInput(){
-        var result = service.saveTema(null, "", 9, 12);
+    public void testSaveTema_InvalidId(){
+        assertThrows(ValidationException.class, () -> {
+            service.saveTema("", "desc", 6, 4);
+        });
+    }
+
+    @Test
+    public void testSaveTema_InvalidDesc(){
+       assertThrows(ValidationException.class, () -> {
+           service.saveTema("id", "", 6, 4);
+       });
+    }
+
+    @Test
+    public void testSaveTema_InvalidDeadline(){
+        assertThrows(ValidationException.class, () -> {
+            service.saveTema("id", "test", 3, 4);
+        });
+    }
+
+    @Test
+    public void testSaveTema_InvalidStartline(){
+        assertThrows(ValidationException.class, () -> {
+            service.saveTema("id", "test", 6, 8);
+        });
+    }
+
+    @Test
+    public void testSaveTema_ValidInputDuplicateId(){
+        var result = service.saveTema("id", "desc", 6, 4);
+        assertEquals(0, result);
+
+        result = service.saveTema("id", "desc", 6, 4);
         assertEquals(1, result);
     }
+
 
 }
