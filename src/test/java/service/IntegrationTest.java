@@ -2,6 +2,7 @@ package service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 public class IntegrationTest {
   @Mock
@@ -9,11 +10,12 @@ public class IntegrationTest {
 
   @Before
   public void setup() {
-
+    
   }
+
   @Test
   public void addStudent_test() {
-
+    
   }
 
   @Test
@@ -28,6 +30,6 @@ public class IntegrationTest {
 
   @Test
   public void addAll_test() {
-    
+
   }
 }
