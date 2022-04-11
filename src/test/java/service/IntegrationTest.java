@@ -1,6 +1,16 @@
 package service;
 
+import org.junit.Before;
+import org.junit.Test;
+
 public class IntegrationTest {
+  @Mock
+  private Service service;
+
+  @Before
+  public void setup() {
+
+  }
   @Test
   public void addStudent_test() {
 
